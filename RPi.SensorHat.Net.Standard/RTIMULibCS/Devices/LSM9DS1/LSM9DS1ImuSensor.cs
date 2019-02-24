@@ -4,29 +4,29 @@
 //
 //  Copyright (c) 2015, richards-tech, LLC
 //
-//  Permission is hereby granted, free of charge, to any person obtaining a copy of 
-//  this software and associated documentation files (the "Software"), to deal in 
-//  the Software without restriction, including without limitation the rights to use, 
-//  copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the 
-//  Software, and to permit persons to whom the Software is furnished to do so, 
+//  Permission is hereby granted, free of charge, to any person obtaining a copy of
+//  this software and associated documentation files (the "Software"), to deal in
+//  the Software without restriction, including without limitation the rights to use,
+//  copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the
+//  Software, and to permit persons to whom the Software is furnished to do so,
 //  subject to the following conditions:
 //
-//  The above copyright notice and this permission notice shall be included in all 
+//  The above copyright notice and this permission notice shall be included in all
 //  copies or substantial portions of the Software.
 //
-//  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
-//  INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A 
-//  PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT 
-//  HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION 
-//  OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE 
+//  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+//  INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A
+//  PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+//  HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+//  OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 //  SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+using Emmellsoft.IoT.Rpi;
 using System;
-using System.Threading.Tasks;
+
 // using Windows.Devices.Enumeration;
 // using Windows.Devices.I2c;
 using System.Device.I2c;
-using System.Device.I2c.Drivers;
 using System.Threading;
 
 namespace RichardsTech.Sensors.Devices.LSM9DS1
@@ -39,8 +39,8 @@ namespace RichardsTech.Sensors.Devices.LSM9DS1
 		private readonly byte _accelGyroI2CAddress;
 		private readonly byte _magI2CAddress;
 		private readonly LSM9DS1Config _config;
-		private UnixI2cDevice _accelGyroI2CDevice;
-		private UnixI2cDevice _magI2CDevice;
+		private I2cDevice _accelGyroI2CDevice;
+		private I2cDevice _magI2CDevice;
 		private double _gyroScale;
 		private double _accelerationScale;
 		private double _magneticFieldScale;
@@ -89,10 +89,10 @@ namespace RichardsTech.Sensors.Devices.LSM9DS1
 			try
 			{
 				var i2cSettings = new I2cConnectionSettings(1, _accelGyroI2CAddress);
-                _accelGyroI2CDevice = new UnixI2cDevice(i2cSettings);
-			
+				_accelGyroI2CDevice = I2cDeviceFactory.Create(i2cSettings);
+
 				i2cSettings = new I2cConnectionSettings(1, _magI2CAddress);
-                _magI2CDevice = new UnixI2cDevice(i2cSettings);
+				_magI2CDevice = I2cDeviceFactory.Create(i2cSettings);
 			}
 			catch (Exception exception)
 			{
@@ -287,7 +287,7 @@ namespace RichardsTech.Sensors.Devices.LSM9DS1
 		{
 			int compassSampleRateValue = (int)_config.CompassSampleRate;
 
-			if ((compassSampleRateValue < 0) || (compassSampleRateValue > 7)) 
+			if ((compassSampleRateValue < 0) || (compassSampleRateValue > 7))
 			{
 				throw new SensorException($"Illegal LSM9DS1 compass sample rate code {_config.CompassSampleRate}");
 			}

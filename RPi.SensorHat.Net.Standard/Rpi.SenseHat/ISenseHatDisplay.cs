@@ -4,28 +4,24 @@
 //
 //  Copyright (c) 2017, Mattias Larsson
 //
-//  Permission is hereby granted, free of charge, to any person obtaining a copy of 
-//  this software and associated documentation files (the "Software"), to deal in 
-//  the Software without restriction, including without limitation the rights to use, 
-//  copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the 
-//  Software, and to permit persons to whom the Software is furnished to do so, 
+//  Permission is hereby granted, free of charge, to any person obtaining a copy of
+//  this software and associated documentation files (the "Software"), to deal in
+//  the Software without restriction, including without limitation the rights to use,
+//  copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the
+//  Software, and to permit persons to whom the Software is furnished to do so,
 //  subject to the following conditions:
 //
-//  The above copyright notice and this permission notice shall be included in all 
+//  The above copyright notice and this permission notice shall be included in all
 //  copies or substantial portions of the Software.
 //
-//  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
-//  INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A 
-//  PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT 
-//  HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION 
-//  OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE 
+//  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+//  INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A
+//  PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+//  HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+//  OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 //  SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-// #if NETFX_CORE
-// using Windows.UI;
-// #else
 using System.Drawing;
-// #endif
 
 namespace Emmellsoft.IoT.Rpi.SenseHat
 {
@@ -38,7 +34,7 @@ namespace Emmellsoft.IoT.Rpi.SenseHat
 		/// The virtual screen array.
 		/// Note: Changes to this property requires a call to Update() to affect the physical screen.
 		/// </summary>
-		Color[,] Screen
+		Image Screen
 		{ get; }
 
 		/// <summary>
@@ -60,19 +56,19 @@ namespace Emmellsoft.IoT.Rpi.SenseHat
 		{ get; set; }
 
 		/// <summary>
-		/// The gamma of the red color component. 
+		/// The gamma of the red color component.
 		/// </summary>
 		double RedGamma
 		{ get; set; }
 
 		/// <summary>
-		/// The gamma of the green color component. 
+		/// The gamma of the green color component.
 		/// </summary>
 		double GreenGamma
 		{ get; set; }
 
 		/// <summary>
-		/// The gamma of the blue color component. 
+		/// The gamma of the blue color component.
 		/// </summary>
 		double BlueGamma
 		{ get; set; }
@@ -107,7 +103,7 @@ namespace Emmellsoft.IoT.Rpi.SenseHat
 		/// <param name="colors">2D array of colors. Must have the dimensions 8 x 8.</param>
 		/// <param name="offsetX">The screen horizontal offset.</param>
 		/// <param name="offsetY">The screen vertical offset.</param>
-		void CopyColorsToScreen(Color[,] colors, int offsetX = 0, int offsetY = 0);
+		void CopyColorsToScreen(Image colors, int offsetX = 0, int offsetY = 0);
 
 		/// <summary>
 		/// Copies the given array of colors to the Screen property array.
@@ -122,7 +118,7 @@ namespace Emmellsoft.IoT.Rpi.SenseHat
 		/// Copies the current Screen property array to the given array of colors.
 		/// </summary>
 		/// <param name="colors">2D array of colors. Must have the dimensions 8 x 8.</param>
-		void CopyScreenToColors(Color[,] colors);
+		void CopyScreenToColors(Image colors);
 
 		/// <summary>
 		/// Copies the given array of colors to the Screen property array.
@@ -133,13 +129,13 @@ namespace Emmellsoft.IoT.Rpi.SenseHat
 
 		/// <summary>
 		/// Read the raw data of the physical display. Will return 192 bytes.
-		/// 
+		///
 		/// The layout of the LED buffer:
 		/// Row 1: R R R R R R R R G G G G G G G G B B B B B B B B
 		/// Row 2: R R R R R R R R G G G G G G G G B B B B B B B B
 		/// ...
 		/// Row 8: R R R R R R R R G G G G G G G G B B B B B B B B
-		/// 
+		///
 		/// Note: Each color component is only 5 bits long, i.e. 0=darkest and 31=brightest.
 		/// </summary>
 		/// <returns></returns>
@@ -148,13 +144,13 @@ namespace Emmellsoft.IoT.Rpi.SenseHat
 		/// <summary>
 		/// Write raw data to the physical display.
 		/// The raw buffer must be 192 bytes long.
-		/// 
+		///
 		/// The layout of the LED buffer:
 		/// Row 1: R R R R R R R R G G G G G G G G B B B B B B B B
 		/// Row 2: R R R R R R R R G G G G G G G G B B B B B B B B
 		/// ...
 		/// Row 8: R R R R R R R R G G G G G G G G B B B B B B B B
-		/// 
+		///
 		/// Note: Each color component is only 5 bits long, i.e. 0=darkest and 31=brightest.
 		/// </summary>
 		/// <param name="rawBuffer">192 bytes</param>

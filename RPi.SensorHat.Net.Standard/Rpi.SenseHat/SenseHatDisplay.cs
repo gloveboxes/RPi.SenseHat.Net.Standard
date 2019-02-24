@@ -4,28 +4,27 @@
 //
 //  Copyright (c) 2017, Mattias Larsson
 //
-//  Permission is hereby granted, free of charge, to any person obtaining a copy of 
-//  this software and associated documentation files (the "Software"), to deal in 
-//  the Software without restriction, including without limitation the rights to use, 
-//  copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the 
-//  Software, and to permit persons to whom the Software is furnished to do so, 
+//  Permission is hereby granted, free of charge, to any person obtaining a copy of
+//  this software and associated documentation files (the "Software"), to deal in
+//  the Software without restriction, including without limitation the rights to use,
+//  copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the
+//  Software, and to permit persons to whom the Software is furnished to do so,
 //  subject to the following conditions:
 //
-//  The above copyright notice and this permission notice shall be included in all 
+//  The above copyright notice and this permission notice shall be included in all
 //  copies or substantial portions of the Software.
 //
-//  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
-//  INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A 
-//  PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT 
-//  HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION 
-//  OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE 
+//  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+//  INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A
+//  PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+//  HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+//  OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 //  SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 using System;
-using System.Drawing;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
-// using Windows.UI;
 
 namespace Emmellsoft.IoT.Rpi.SenseHat
 {
@@ -66,27 +65,22 @@ namespace Emmellsoft.IoT.Rpi.SenseHat
 		{
 			_mainI2CDevice = mainI2CDevice;
 
-			Screen = new Color[8, 8];
+			Screen = new Image(8, 8);
 
 			RedGamma = 1.8;
 			GreenGamma = 2.0;
 			BlueGamma = 1.8;
-
-			//RedGamma = 2.8;
-			//GreenGamma = 2.8;
-			//BlueGamma = 2.8;
 
 			Reset();
 
 			UpdateDirectionParameters();
 		}
 
-		public Color[,] Screen
-		{ get; }
+		public Image Screen { get; }
 
 		public DisplayDirection Direction
 		{
-			get { return _direction; }
+			get => _direction;
 			set
 			{
 				_direction = value;
@@ -96,7 +90,7 @@ namespace Emmellsoft.IoT.Rpi.SenseHat
 
 		public bool FlipHorizontal
 		{
-			get { return _flipHorizontal; }
+			get => _flipHorizontal;
 			set
 			{
 				_flipHorizontal = value;
@@ -106,7 +100,7 @@ namespace Emmellsoft.IoT.Rpi.SenseHat
 
 		public bool FlipVertical
 		{
-			get { return _flipVertical; }
+			get => _flipVertical;
 			set
 			{
 				_flipVertical = value;
@@ -116,7 +110,7 @@ namespace Emmellsoft.IoT.Rpi.SenseHat
 
 		public double RedGamma
 		{
-			get { return _redGamma; }
+			get => _redGamma;
 			set
 			{
 				_redGamma = value;
@@ -126,7 +120,7 @@ namespace Emmellsoft.IoT.Rpi.SenseHat
 
 		public double GreenGamma
 		{
-			get { return _greenGamma; }
+			get => _greenGamma;
 			set
 			{
 				_greenGamma = value;
@@ -136,7 +130,7 @@ namespace Emmellsoft.IoT.Rpi.SenseHat
 
 		public double BlueGamma
 		{
-			get { return _blueGamma; }
+			get => _blueGamma;
 			set
 			{
 				_blueGamma = value;
@@ -146,37 +140,23 @@ namespace Emmellsoft.IoT.Rpi.SenseHat
 
 		public void Reset()
 		{
-			Array.Copy(InitialColors, Screen, Screen.Length);
+			Array.Copy(InitialColors, Screen.Pixels, Screen.Length);
 		}
 
 		public void Clear()
 		{
-			Fill(Color.Black);
+			Screen.Fill(Color.Black);
 		}
 
 		public void Fill(Color color)
 		{
-			for (int y = 0; y < 8; y++)
-			{
-				for (int x = 0; x < 8; x++)
-				{
-					Screen[x, y] = color;
-				}
-			}
+			Screen.Fill(color);
 		}
 
-		public void CopyColorsToScreen(Color[,] colors, int offsetX, int offsetY)
+		public void CopyColorsToScreen(Image image, int offsetX, int offsetY)
 		{
-			if ((colors.GetLength(0) != 8) || (colors.GetLength(1) != 8))
-			{
-				throw new ArgumentException("The pixel matrix must be 8x8.", nameof(colors));
-			}
-
-			if ((Screen.GetLength(0) != 8) || (Screen.GetLength(1) != 8))
-			{
-				// Hm. Someone has messed with the pixels array...
-				throw new ArgumentException("My pixel matrix must be 8x8.");
-			}
+			AssertImageSize(image);
+			AssertScreenSize();
 
 			if (offsetX < 0)
 			{
@@ -192,8 +172,25 @@ namespace Emmellsoft.IoT.Rpi.SenseHat
 			{
 				for (int x = 0; x < 8; x++)
 				{
-					Screen[(x + offsetX) % 8, (y + offsetY) % 8] = colors[x, y];
+					Screen[(x + offsetX) % 8, (y + offsetY) % 8] = image[x, y];
 				}
+			}
+		}
+
+		private void AssertScreenSize()
+		{
+			if ((Screen.Width != 8) || (Screen.Height != 8))
+			{
+				// Hm. Someone has messed with the pixels array...
+				throw new ArgumentException("My image must be 8x8.");
+			}
+		}
+
+		private static void AssertImageSize(Image image)
+		{
+			if ((image.Width != 8) || (image.Height != 8))
+			{
+				throw new ArgumentException("The image must be 8x8.", nameof(image));
 			}
 		}
 
@@ -204,11 +201,7 @@ namespace Emmellsoft.IoT.Rpi.SenseHat
 				throw new ArgumentException("The pixel array must be 64 'pixels' long (i.e. 8x8).", nameof(colors));
 			}
 
-			if ((Screen.GetLength(0) != 8) || (Screen.GetLength(1) != 8))
-			{
-				// Hm. Someone has messed with the pixels array...
-				throw new ArgumentException("My pixel matrix must be 8x8.");
-			}
+			AssertScreenSize();
 
 			if (offsetX < 0)
 			{
@@ -230,24 +223,16 @@ namespace Emmellsoft.IoT.Rpi.SenseHat
 			}
 		}
 
-		public void CopyScreenToColors(Color[,] colors)
+		public void CopyScreenToColors(Image image)
 		{
-			if ((colors.GetLength(0) != 8) || (colors.GetLength(1) != 8))
-			{
-				throw new ArgumentException("The pixel matrix must be 8x8.", nameof(colors));
-			}
-
-			if ((Screen.GetLength(0) != 8) || (Screen.GetLength(1) != 8))
-			{
-				// Hm. Someone has messed with the pixels array...
-				throw new ArgumentException("My pixel matrix must be 8x8.");
-			}
+			AssertImageSize(image);
+			AssertScreenSize();
 
 			for (int y = 0; y < 8; y++)
 			{
 				for (int x = 0; x < 8; x++)
 				{
-					colors[x, y] = Screen[x, y];
+					image[x, y] = Screen[x, y];
 				}
 			}
 		}
@@ -258,12 +243,7 @@ namespace Emmellsoft.IoT.Rpi.SenseHat
 			{
 				throw new ArgumentException("The pixel array must be 64 'pixels' long (i.e. 8x8).", nameof(colors));
 			}
-
-			if ((Screen.GetLength(0) != 8) || (Screen.GetLength(1) != 8))
-			{
-				// Hm. Someone has messed with the pixels array...
-				throw new ArgumentException("My pixel matrix must be 8x8.");
-			}
+			AssertScreenSize();
 
 			int i = 0;
 			for (int y = 0; y < 8; y++)
@@ -299,11 +279,7 @@ namespace Emmellsoft.IoT.Rpi.SenseHat
 		/// </summary>
 		public void Update()
 		{
-			if ((Screen.GetLength(0) != 8) || (Screen.GetLength(1) != 8))
-			{
-				// Hm. Someone has messed with the pixels array...
-				throw new ArgumentException("My pixel matrix must be 8x8.");
-			}
+			AssertScreenSize();
 
 			byte[] buffer = new byte[8 * 8 * 3];
 
@@ -351,17 +327,13 @@ namespace Emmellsoft.IoT.Rpi.SenseHat
 
 		private void UpdateDirectionParameters()
 		{
-			bool leftToRight;
-			bool topToBottom;
-			bool flipAxis;
-
 			PixelSupport.ConvertDirectionParameters(
 				_direction,
 				_flipHorizontal,
 				_flipVertical,
-				out leftToRight,
-				out topToBottom,
-				out flipAxis);
+				out bool leftToRight,
+				out bool topToBottom,
+				out bool flipAxis);
 
 			if (leftToRight)
 			{
