@@ -4,29 +4,29 @@
 //
 //  Copyright (c) 2015, richards-tech, LLC
 //
-//  Permission is hereby granted, free of charge, to any person obtaining a copy of 
-//  this software and associated documentation files (the "Software"), to deal in 
-//  the Software without restriction, including without limitation the rights to use, 
-//  copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the 
-//  Software, and to permit persons to whom the Software is furnished to do so, 
+//  Permission is hereby granted, free of charge, to any person obtaining a copy of
+//  this software and associated documentation files (the "Software"), to deal in
+//  the Software without restriction, including without limitation the rights to use,
+//  copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the
+//  Software, and to permit persons to whom the Software is furnished to do so,
 //  subject to the following conditions:
 //
-//  The above copyright notice and this permission notice shall be included in all 
+//  The above copyright notice and this permission notice shall be included in all
 //  copies or substantial portions of the Software.
 //
-//  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
-//  INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A 
-//  PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT 
-//  HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION 
-//  OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE 
+//  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+//  INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A
+//  PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+//  HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+//  OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 //  SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+using Emmellsoft.IoT.Rpi;
 using System;
-using System.Threading.Tasks;
+
 // using Windows.Devices.Enumeration;
 // using Windows.Devices.I2c;
 using System.Device.I2c;
-using System.Device.I2c.Drivers;
 
 namespace RichardsTech.Sensors.Devices.HTS221
 {
@@ -37,15 +37,15 @@ namespace RichardsTech.Sensors.Devices.HTS221
 	{
 		private readonly byte _i2CAddress;
 
-		private UnixI2cDevice _i2CDevice;
+		private I2cDevice _i2CDevice;
 
 		private Func<Int16, double> _temperatureConversionFunc;
 		private Func<Int16, double> _humidityConversionFunc;
 
-        private bool _humidityValid = false;
-        private double _humidity = 0;
-        private bool _temperatureValid = false;
-        private double _temperature = 0;
+		private bool _humidityValid = false;
+		private double _humidity = 0;
+		private bool _temperatureValid = false;
+		private double _temperature = 0;
 
 		public HTS221HumiditySensor(byte i2CAddress)
 		{
@@ -58,7 +58,7 @@ namespace RichardsTech.Sensors.Devices.HTS221
 			_i2CDevice.Dispose();
 		}
 
-        protected override bool InitDevice()
+		protected override bool InitDevice()
 		{
 			ConnectToI2CDevices();
 
@@ -126,7 +126,7 @@ namespace RichardsTech.Sensors.Devices.HTS221
 			try
 			{
 				var i2cSettings = new I2cConnectionSettings(1, _i2CAddress);
-                _i2CDevice = new UnixI2cDevice(i2cSettings);
+				_i2CDevice = I2cDeviceFactory.Create(i2cSettings);
 			}
 			catch (Exception exception)
 			{
@@ -141,7 +141,7 @@ namespace RichardsTech.Sensors.Devices.HTS221
 		/// </summary>
 		public override bool Update()
 		{
-            bool newReadings = false;
+			bool newReadings = false;
 
 			var readings = new SensorReadings
 			{
@@ -155,7 +155,7 @@ namespace RichardsTech.Sensors.Devices.HTS221
 				Int16 rawHumidity = (Int16)I2CSupport.Read16Bits(_i2CDevice, HTS221Defines.HUMIDITY_OUT_L + 0x80, ByteOrder.LittleEndian, "Failed to read HTS221 humidity");
 				_humidity = _humidityConversionFunc(rawHumidity);
 				_humidityValid = true;
-                newReadings = true;
+				newReadings = true;
 			}
 
 			if ((status & 0x01) == 0x01)
@@ -163,15 +163,15 @@ namespace RichardsTech.Sensors.Devices.HTS221
 				Int16 rawTemperature = (Int16)I2CSupport.Read16Bits(_i2CDevice, HTS221Defines.TEMP_OUT_L + 0x80, ByteOrder.LittleEndian, "Failed to read HTS221 temperature");
 				_temperature = _temperatureConversionFunc(rawTemperature);
 				_temperatureValid = true;
-                newReadings = true;
+				newReadings = true;
 			}
 
 			if (newReadings)
 			{
-                readings.Humidity = _humidity;
-                readings.HumidityValid = _humidityValid;
-                readings.Temperature = _temperature;
-                readings.TemperatureValid = _temperatureValid;
+				readings.Humidity = _humidity;
+				readings.HumidityValid = _humidityValid;
+				readings.Temperature = _temperature;
+				readings.TemperatureValid = _temperatureValid;
 				AssignNewReadings(readings);
 				return true;
 			}

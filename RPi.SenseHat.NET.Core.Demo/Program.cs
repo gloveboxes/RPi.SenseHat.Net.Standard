@@ -1,49 +1,43 @@
-﻿using System;
-using System.Drawing;
-using System.Threading;
-using System.Threading.Tasks;
-using Emmellsoft.IoT.Rpi.SenseHat;
-using Emmellsoft.IoT.Rpi.SenseHat.Fonts.SingleColor;
+﻿using Emmellsoft.IoT.Rpi.SenseHat;
 using RPi.SenseHat.Demo.Demos;
 
 namespace RPi.SenseHat.Demo
 {
-    class Program
-    {
-        static void Main(string[] args)
-        {
-            MainAsync(args);
-        }
+	internal class Program
+	{
+		private static void Main(string[] args)
+		{
+			ISenseHat senseHat = SenseHatFactory.GetSenseHat();
 
-        public static void MainAsync(string[] args)
-        {
-            ISenseHat senseHat = SenseHatFactory.GetSenseHat();
-            
-           
-            // DiscoLights dl = new DiscoLights(senseHat);
-            // dl.Run();
+			// DiscoLights dl = new DiscoLights(senseHat);
+			// dl.Run();
 
-            BinaryClock bc = new BinaryClock(senseHat, null);
-            bc.Run();
+			// MultiColorScrollText colorScroll = new MultiColorScrollText(senseHat, "Hello Raspberry Pi 3 Sense HAT!");
+			// colorScroll.Run();
 
-            // Compass compass = new Compass(senseHat, null);
-            // compass.Run();
+			SpriteAnimation mario = new SpriteAnimation(senseHat);
+			mario.Run();
 
-            // GravityBlob gb = new GravityBlob(senseHat, null);
-            // gb.Run();
+			// BinaryClock bc = new BinaryClock(senseHat, null);
+			// bc.Run();
 
-            // JoystickPixel js = new JoystickPixel(senseHat, null);
-            // js.Run();
+			// Compass compass = new Compass(senseHat, null);
+			// compass.Run();
 
-            // ReadAllSensors ras = new ReadAllSensors(senseHat, null);
-            // ras.Run();
+			// GravityBlob gb = new GravityBlob(senseHat, null);
+			// gb.Run();
 
-            // SingleColorScrollText scroll = new SingleColorScrollText(senseHat, "Hello Raspberry Pi 3 Sense HAT!");
-            // scroll.Run();
+			// JoystickPixel js = new JoystickPixel(senseHat, null);
+			// js.Run();
 
-            WriteTemperature wt = new WriteTemperature(senseHat,null);
-            wt.Run();
+			// ReadAllSensors ras = new ReadAllSensors(senseHat, null);
+			// ras.Run();
 
-        }
-    }
+			// SingleColorScrollText scroll = new SingleColorScrollText(senseHat, "Hello Raspberry Pi 3 Sense HAT!");
+			// scroll.Run();
+
+			WriteTemperature wt = new WriteTemperature(senseHat, null);
+			wt.Run();
+		}
+	}
 }
