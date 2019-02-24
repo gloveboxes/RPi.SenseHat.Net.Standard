@@ -1,0 +1,23 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "publish",
+            "linux": {
+                "command": "dotnet",
+                "type": "process",
+                "args": [
+                    "publish",
+                    "-r",
+                    "linux-arm",
+                    "--self-contained",
+                    "false",
+                    "-o",
+                    "/mnt/rpi3plus/dotnet/${workspaceFolderBasename}",
+                    "${workspaceFolder}/${workspaceFolderBasename}.csproj"
+                ],
+            },
+            "problemMatcher": "$msCompile"
+        }
+    ]
+}
