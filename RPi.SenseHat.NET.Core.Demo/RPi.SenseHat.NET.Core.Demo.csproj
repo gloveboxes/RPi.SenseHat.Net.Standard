@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netcoreapp2.2</TargetFramework>
+    <RootNamespace>RPi.SenseHat.Demo
+    </RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="../RPi.SensorHat.Net.Standard/RPi.SensorHat.Net.Standard.csproj" /> 
+  </ItemGroup>
+
+</Project>
