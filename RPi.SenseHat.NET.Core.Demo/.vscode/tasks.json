@@ -18,7 +18,7 @@
                     ";",
                     "sh",
                     "-c",
-                    "\"rsync -rvuz ${workspaceFolder}/bin/linux-arm/publish/ pi@raspberrypi.local:/home/pi/dotnet/${workspaceFolderBasename}\""
+                    "\"rsync -rvu ${workspaceFolder}/bin/linux-arm/publish/ pi@raspberrypi.local:/home/pi/dotnet/${workspaceFolderBasename}\""
                 ],
             },
             "osx": {
@@ -40,6 +40,25 @@
                 ],
             },
             "problemMatcher": "$msCompile"
+        },
+        {
+            "label": "publish-sshfs",
+            "linux": {
+                "command": "dotnet",
+                "type": "process",
+                "args": [
+                    "publish",
+                    "-r",
+                    "linux-arm",
+                    "--self-contained",
+                    "false",
+                    "-o",
+                    "/mnt/rpi3plus/dotnet/${workspaceFolderBasename}",
+                    "${workspaceFolder}/${workspaceFolderBasename}.csproj"
+                ],
+            },
+            "problemMatcher": "$msCompile"
         }
+    ]
     ]
 }

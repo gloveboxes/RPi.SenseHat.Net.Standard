@@ -5,6 +5,29 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "name": "SSHFS - Publish .NET Core and Remote Launch",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "publish-sshfs",
+            "program": "/usr/share/dotnet/dotnet",
+            "args": [
+                "./${workspaceFolderBasename}.dll"
+            ],
+            "cwd": "~/dotnet/${workspaceFolderBasename}",
+            "stopAtEntry": false,
+            "console": "internalConsole",
+            "linux": {
+                "pipeTransport": {
+                    "pipeCwd": "${workspaceRoot}",
+                    "pipeProgram": "/usr/bin/ssh",
+                    "pipeArgs": [
+                        "pi@raspberrypi.local"
+                    ],
+                    "debuggerPath": "~/vsdbg/vsdbg"
+                }
+            },
+        },
+        {
             "name": "Publish .NET Core and Remote Launch",
             "type": "coreclr",
             "request": "launch",
