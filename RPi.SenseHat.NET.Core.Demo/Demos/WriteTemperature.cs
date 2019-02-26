@@ -26,104 +26,121 @@ using System;
 using System.Drawing;
 using Emmellsoft.IoT.Rpi.SenseHat;
 using Emmellsoft.IoT.Rpi.SenseHat.Fonts.SingleColor;
+using RPi.Sensors.Devices.Cpu;
+
+
 
 namespace RPi.SenseHat.Demo.Demos
 {
-	/// <summary>
-	/// Is it only me or does it show some unusual high temperature? :-S
-	/// </summary>
-	public class WriteTemperature : SenseHatDemo
-	{
-		public WriteTemperature(ISenseHat senseHat, Action<string> setScreenText)
-			: base(senseHat, setScreenText)
-		{
-		}
+    /// <summary>
+    /// Is it only me or does it show some unusual high temperature? :-S
+    /// </summary>
+    public class WriteTemperature : SenseHatDemo
+    {
+        public WriteTemperature(ISenseHat senseHat, Action<string> setScreenText)
+            : base(senseHat, setScreenText)
+        {
+        }
 
-		private enum TemperatureUnit
-		{
-			Celcius,
-			Fahrenheit,
-			Kelvin
-		}
+        private enum TemperatureUnit
+        {
+            Celcius,
+            Fahrenheit,
+            Kelvin
+        }
 
-		public override void Run()
-		{
-			var tinyFont = new TinyFont();
 
-			ISenseHatDisplay display = SenseHat.Display;
 
-			TemperatureUnit unit = TemperatureUnit.Celcius; // The wanted temperature unit.
+        public override void Run()
+        {
+            var tinyFont = new TinyFont();
+            Cpu cpu = new Cpu();
+            double temp_calibrated;
 
-			string unitText = GetUnitText(unit); // Get the unit as a string.
+            ISenseHatDisplay display = SenseHat.Display;
 
-			while (true)
-			{
-				SenseHat.Sensors.HumiditySensor.Update();
+            TemperatureUnit unit = TemperatureUnit.Celcius; // The wanted temperature unit.
 
-				if (SenseHat.Sensors.Temperature.HasValue)
-				{
-					double temperatureValue = ConvertTemperatureValue(unit, SenseHat.Sensors.Temperature.Value);
+            string unitText = GetUnitText(unit); // Get the unit as a string.
 
-					int temperature = (int)Math.Round(temperatureValue);
-					string text = temperature.ToString();
+            while (true)
+            {
+                SenseHat.Sensors.HumiditySensor.Update();
 
-					if (text.Length > 2)
-					{
-						// Too long to fit the display!
-						text = "**";
-					}
+                if (SenseHat.Sensors.Temperature.HasValue)
+                {
+                    double temperatureValue = ConvertTemperatureValue(unit, SenseHat.Sensors.Temperature.Value);
+                    double? cpu_temp = cpu.GetTemperature();
+                    if (cpu_temp != null)
+                    {
+                        temp_calibrated = temperatureValue - (((double)cpu_temp - temperatureValue) / 0.79);
+                    }
+                    else
+                    {
+                        temp_calibrated = temperatureValue;
+                    }
 
-					display.Clear();
-					tinyFont.Write(display, text, Color.Blue);
-					display.Update();
+                    int temperature = (int)Math.Round((double)temp_calibrated);
 
-					SetScreenText?.Invoke($"{temperatureValue:0.0} {unitText}"); // Update the MainPage (if it's utilized; i.e. not null).
+                    string text = temperature.ToString();
 
-					// Sleep quite some time; the temperature usually change quite slowly...
-					Sleep(TimeSpan.FromSeconds(5));
-				}
-				else
-				{
-					// Rapid update until there is a temperature reading.
-					Sleep(TimeSpan.FromSeconds(0.5));
-				}
-			}
-		}
+                    if (text.Length > 2)
+                    {
+                        // Too long to fit the display!
+                        text = "**";
+                    }
 
-		private static double ConvertTemperatureValue(TemperatureUnit unit, double temperatureInCelcius)
-		{
-			switch (unit)
-			{
-				case TemperatureUnit.Celcius:
-					return temperatureInCelcius;
+                    display.Clear();
+                    tinyFont.Write(display, text, Color.Blue);
+                    display.Update();
 
-				case TemperatureUnit.Fahrenheit:
-					return temperatureInCelcius * 9 / 5 + 32;
+                    SetScreenText?.Invoke($"{temperatureValue:0.0} {unitText}"); // Update the MainPage (if it's utilized; i.e. not null).
 
-				case TemperatureUnit.Kelvin:
-					return temperatureInCelcius + 273.15;
+                    // Sleep quite some time; the temperature usually change quite slowly...
+                    Sleep(TimeSpan.FromSeconds(5));
+                }
+                else
+                {
+                    // Rapid update until there is a temperature reading.
+                    Sleep(TimeSpan.FromSeconds(0.5));
+                }
+            }
+        }
 
-				default:
-					throw new ArgumentOutOfRangeException();
-			}
-		}
+        private static double ConvertTemperatureValue(TemperatureUnit unit, double temperatureInCelcius)
+        {
+            switch (unit)
+            {
+                case TemperatureUnit.Celcius:
+                    return temperatureInCelcius;
 
-		private static string GetUnitText(TemperatureUnit unit)
-		{
-			switch (unit)
-			{
-				case TemperatureUnit.Celcius:
-					return "\u00B0C"; // Where "\u00B0" is the degree-symbol.
+                case TemperatureUnit.Fahrenheit:
+                    return temperatureInCelcius * 9 / 5 + 32;
 
-				case TemperatureUnit.Fahrenheit:
-					return "\u00B0F"; // Where "\u00B0" is the degree-symbol.
+                case TemperatureUnit.Kelvin:
+                    return temperatureInCelcius + 273.15;
 
-				case TemperatureUnit.Kelvin:
-					return "K";
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+        }
 
-				default:
-					throw new ArgumentOutOfRangeException();
-			}
-		}
-	}
+        private static string GetUnitText(TemperatureUnit unit)
+        {
+            switch (unit)
+            {
+                case TemperatureUnit.Celcius:
+                    return "\u00B0C"; // Where "\u00B0" is the degree-symbol.
+
+                case TemperatureUnit.Fahrenheit:
+                    return "\u00B0F"; // Where "\u00B0" is the degree-symbol.
+
+                case TemperatureUnit.Kelvin:
+                    return "K";
+
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+        }
+    }
 }

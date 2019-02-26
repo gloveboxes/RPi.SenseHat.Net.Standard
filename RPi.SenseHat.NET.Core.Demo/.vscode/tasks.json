@@ -4,17 +4,39 @@
         {
             "label": "publish",
             "linux": {
-                "command": "dotnet",
-                "type": "process",
+                "command": "sh",
+                "type": "shell",
                 "args": [
+                    "-c",
+                    "\"dotnet",
                     "publish",
                     "-r",
                     "linux-arm",
-                    "--self-contained",
-                    "false",
                     "-o",
-                    "/mnt/rpi3plus/dotnet/${workspaceFolderBasename}",
-                    "${workspaceFolder}/${workspaceFolderBasename}.csproj"
+                    "bin/linux-arm/publish",
+                    "${workspaceFolder}/${workspaceFolderBasename}.csproj\"",
+                    ";",
+                    "sh",
+                    "-c",
+                    "\"rsync -rvuz ${workspaceFolder}/bin/linux-arm/publish/ pi@raspberrypi.local:/home/pi/dotnet/${workspaceFolderBasename}\""
+                ],
+            },
+            "osx": {
+                "command": "sh",
+                "type": "shell",
+                "args": [
+                    "-c",
+                    "\"dotnet",
+                    "publish",
+                    "-r",
+                    "linux-arm",
+                    "-o",
+                    "bin/linux-arm/publish",
+                    "${workspaceFolder}/${workspaceFolderBasename}.csproj\"",
+                    ";",
+                    "sh",
+                    "-c",
+                    "\"rsync -rvuz ${workspaceFolder}/bin/linux-arm/publish/ pi@raspberrypi.local:/home/pi/dotnet/${workspaceFolderBasename}\""
                 ],
             },
             "problemMatcher": "$msCompile"

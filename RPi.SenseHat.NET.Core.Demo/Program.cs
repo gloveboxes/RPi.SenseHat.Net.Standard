@@ -15,8 +15,8 @@ namespace RPi.SenseHat.Demo
 			// MultiColorScrollText colorScroll = new MultiColorScrollText(senseHat, "Hello Raspberry Pi 3 Sense HAT!");
 			// colorScroll.Run();
 
-			SpriteAnimation mario = new SpriteAnimation(senseHat);
-			mario.Run();
+			// SpriteAnimation mario = new SpriteAnimation(senseHat);
+			// mario.Run();
 
 			// BinaryClock bc = new BinaryClock(senseHat, null);
 			// bc.Run();

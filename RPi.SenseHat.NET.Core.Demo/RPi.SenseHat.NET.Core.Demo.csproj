@@ -8,7 +8,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="../RPi.SensorHat.Net.Standard/RPi.SensorHat.Net.Standard.csproj" /> 
+    <ProjectReference Include="../RPi.SensorHat.Net.Standard/RPi.SensorHat.Net.Standard.csproj" />
+    <ProjectReference Include="../../RPi.CpuTemperature.NET.Standard/RPi.CpuTemperature.NET.Standard.csproj" />  
   </ItemGroup>
 
 </Project>
